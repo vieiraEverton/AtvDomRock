@@ -2,17 +2,22 @@ package com.domRock.atv;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class ReadXlsx {
+public class ReadWriteXlsx {
 
-    private static final String SALDO_ITEM = "../../../files/SaldoITEM.xlsx";
+    private static final String SALDO_ITEM = "./files/SaldoITEM.xlsx";
 
-    private static final String MOV_TO_ITEM = "../../../files/MovtoITEM.xlsx";
+    private static final String MOV_TO_ITEM = "./files/MovtoITEM.xlsx";
+
+    private static final String MOV_DAY_ITEM = "./files/MovDayITEM.xlsx";
 
 
     public static ArrayList<SaldoItem> lerSaldoItem(){
@@ -92,5 +97,70 @@ public class ReadXlsx {
             return null;
         }
         return movtoItens;
+    }
+
+    public static boolean escreverMovDiarioITEM(ArrayList<Item> itens){
+        String[] columns = {"Item", "data_lancamento", "qtd_ent", "valor_ent",
+                "qtd_sai", "valor_sai", "qtd_inicial", "valor_inicial",
+                "qtd_final", "valor_final"};
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Itens");
+
+        Font headerFont = workbook.createFont();
+//        headerFont.setBold(true);
+//        headerFont.setFontHeightInPoints((short) 14);
+//        headerFont.setColor(IndexedColors.RED.getIndex());
+
+        CellStyle headerCellStyle = workbook.createCellStyle();
+        headerCellStyle.setFont(headerFont);
+
+        // Create a Row
+        Row headerRow = sheet.createRow(0);
+
+        for (int i = 0; i < columns.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(columns[i]);
+            cell.setCellStyle(headerCellStyle);
+        }
+
+        // Create Other rows and cells with contacts data
+        int rowNum = 1;
+
+        for (Item item : itens) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(item.getItem());
+            row.createCell(1).setCellValue(Util.convertDateForString(item.getDataLancamento()));
+            row.createCell(2).setCellValue(Util.decimalFormat(item.getQuantidadeEntrada(), 4));
+            row.createCell(3).setCellValue(Util.decimalFormat(item.getValorEntrada(), 2));
+            row.createCell(4).setCellValue(Util.decimalFormat(item.getQuantidadeSaida(), 4 ));
+            row.createCell(5).setCellValue(Util.decimalFormat(item.getValorSaida(), 2));
+            row.createCell(6).setCellValue(Util.decimalFormat(item.getQuantidadeInicial(), 4));
+            row.createCell(7).setCellValue(Util.decimalFormat(item.getValorInicial(), 2));
+            row.createCell(8).setCellValue(Util.decimalFormat(item.getQuantidadeFinal(), 4));
+            row.createCell(9).setCellValue(Util.decimalFormat(item.getValorFinal(), 3));
+        }
+
+        // Resize all columns to fit the content size
+        for (int i = 0; i < columns.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        // Write the output to a file
+        FileOutputStream fileOut = null;
+        try {
+            fileOut = new FileOutputStream(MOV_DAY_ITEM);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
+        try {
+            workbook.write(fileOut);
+            fileOut.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 }

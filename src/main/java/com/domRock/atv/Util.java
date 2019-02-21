@@ -1,5 +1,7 @@
 package com.domRock.atv;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -10,7 +12,7 @@ public class Util {
 
         Date date = null;
         try {
-            date = new SimpleDateFormat("dd/MM/yyyy").parse(dateString);
+            date = new SimpleDateFormat("MM/dd/yy").parse(dateString);
         } catch (ParseException e) {
             e.printStackTrace();
             return null;
@@ -21,5 +23,20 @@ public class Util {
 
     public static Double convertStringForDouble(String value) {
         return Double.parseDouble(value.replace(',', '.'));
+    }
+
+    public static String convertDateForString(Date date){
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        return format.format(date);
+    }
+
+    public static String decimalFormat(Double num, int casas) {
+        String casasString = "";
+        for (int i = 0; i < casas; i++){
+            casasString = casasString + "#";
+        }
+        DecimalFormat df = new DecimalFormat("###."+casasString);
+        df.setRoundingMode(RoundingMode.UP);
+        return df.format(num);
     }
 }
