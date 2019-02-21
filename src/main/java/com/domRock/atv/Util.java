@@ -1,6 +1,5 @@
 package com.domRock.atv;
 
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,7 +35,6 @@ public class Util {
             casasString = casasString + "#";
         }
         DecimalFormat df = new DecimalFormat("###."+casasString);
-        df.setRoundingMode(RoundingMode.UP);
         return df.format(num);
     }
 }

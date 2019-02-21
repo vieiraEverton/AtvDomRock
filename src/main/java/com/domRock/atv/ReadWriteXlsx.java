@@ -107,14 +107,11 @@ public class ReadWriteXlsx {
         Sheet sheet = workbook.createSheet("Itens");
 
         Font headerFont = workbook.createFont();
-//        headerFont.setBold(true);
-//        headerFont.setFontHeightInPoints((short) 14);
-//        headerFont.setColor(IndexedColors.RED.getIndex());
 
         CellStyle headerCellStyle = workbook.createCellStyle();
         headerCellStyle.setFont(headerFont);
 
-        // Create a Row
+        // Criado Linha
         Row headerRow = sheet.createRow(0);
 
         for (int i = 0; i < columns.length; i++) {
@@ -123,7 +120,7 @@ public class ReadWriteXlsx {
             cell.setCellStyle(headerCellStyle);
         }
 
-        // Create Other rows and cells with contacts data
+        // Criando as outras linhas
         int rowNum = 1;
 
         for (Item item : itens) {
@@ -137,15 +134,14 @@ public class ReadWriteXlsx {
             row.createCell(6).setCellValue(Util.decimalFormat(item.getQuantidadeInicial(), 4));
             row.createCell(7).setCellValue(Util.decimalFormat(item.getValorInicial(), 2));
             row.createCell(8).setCellValue(Util.decimalFormat(item.getQuantidadeFinal(), 4));
-            row.createCell(9).setCellValue(Util.decimalFormat(item.getValorFinal(), 3));
+            row.createCell(9).setCellValue(Util.decimalFormat(item.getValorFinal(), 2));
         }
 
-        // Resize all columns to fit the content size
         for (int i = 0; i < columns.length; i++) {
             sheet.autoSizeColumn(i);
         }
 
-        // Write the output to a file
+        // Escrevendo no arquivo
         FileOutputStream fileOut = null;
         try {
             fileOut = new FileOutputStream(MOV_DAY_ITEM);

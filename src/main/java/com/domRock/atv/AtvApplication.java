@@ -1,14 +1,10 @@
 package com.domRock.atv;
 
-//import org.springframework.boot.SpringApplication;
-//import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Optional;
 
-//@SpringBootApplication
 public class AtvApplication {
 
 	public static void main(String[] args) {
@@ -36,15 +32,11 @@ public class AtvApplication {
 
 		double quantidadeInicial = saldoItem.map(SaldoItem::getQtdInicio).orElse(0.0);
 		double valorInicial = saldoItem.map(SaldoItem::getValorInicio).orElse(0.0);
-
+		//Gerar a lista final
 		for(int i = 0; i < movtoItems.size(); i++){
 			Item item = new Item(movtoItems.get(i).getItem(), movtoItems.get(i).getDataLancamento(),  0, 0, 0, 0, quantidadeInicial, valorInicial, 0, 0);
-			for(int j = i+1; j < movtoItems.size(); j++){
-				if(!movtoItems.get(i).getItem().equals(movtoItems.get(j).getItem())
-						|| !movtoItems.get(i).getDataLancamento().equals(movtoItems.get(j).getDataLancamento())){
-
-					break;
-				}
+			//Agrupar os Itens
+			for(int j = i; j < movtoItems.size(); j++){
 				if (movtoItems.get(j).getTipoMovimento().equals(TipoMovimento.Ent)){
 					item.setQuantidadeEntrada(item.getQuantidadeEntrada() + movtoItems.get(j).getQuantidade());
 					item.setValorEntrada(item.getValorEntrada() + movtoItems.get(j).getValor());
@@ -53,14 +45,43 @@ public class AtvApplication {
 					item.setQuantidadeSaida(item.getQuantidadeSaida() + movtoItems.get(j).getQuantidade());
 					item.setValorSaida(item.getValorSaida() + movtoItems.get(j).getValor());
 				}
+				if(movtoItems.size() != j+1) {
+					//se o Item mudou tem que obter o novo valor inicial
+					if (!movtoItems.get(i).getItem().equals(movtoItems.get(j + 1).getItem())) {
+						//saldo final = saldo inicial + entrada – saída
+						//quantidade e valor final de um é a quantidade final do outro
+						quantidadeInicial = quantidadeInicial + item.getQuantidadeEntrada() - item.getQuantidadeSaida();
+						valorInicial = valorInicial + item.getValorEntrada() - item.getValorSaida();
+						item.setQuantidadeFinal(quantidadeInicial);
+						item.setValorFinal(valorInicial);
+
+						//obter o saldo inicial atraves da saldoItem
+						final MovtoItem movtoItem1 = movtoItems.get(j + 1);
+						Optional<SaldoItem> saldoItem1 = saldoItems.stream().filter(item1 -> item1.getItem().equals(movtoItem1.getItem())).findFirst();
+
+						quantidadeInicial = saldoItem1.map(SaldoItem::getQtdInicio).orElse(0.0);
+						valorInicial = saldoItem1.map(SaldoItem::getValorInicio).orElse(0.0);
+						break;
+					} else if (!movtoItems.get(i).getDataLancamento().equals(movtoItems.get(j + 1).getDataLancamento())) {
+						//saldo final = saldo inicial + entrada – saída
+						//quantidade e valor final de um é a quantidade final do outro
+						quantidadeInicial = quantidadeInicial + item.getQuantidadeEntrada() - item.getQuantidadeSaida();
+						valorInicial = valorInicial + item.getValorEntrada() - item.getValorSaida();
+						item.setQuantidadeFinal(quantidadeInicial);
+						item.setValorFinal(valorInicial);
+						break;
+					}
+				}
+				else {
+					quantidadeInicial = quantidadeInicial + item.getQuantidadeEntrada() - item.getQuantidadeSaida();
+					valorInicial = valorInicial + item.getValorEntrada() - item.getValorSaida();
+					item.setQuantidadeFinal(quantidadeInicial);
+					item.setValorFinal(valorInicial);
+				}
+
 				i++;
 			}
-//			saldo final = saldo inicial + entrada – saída
-			//quantidade e valor final de um é a quantidade final do outro
-			quantidadeInicial = quantidadeInicial + item.getQuantidadeEntrada() - item.getQuantidadeSaida();
-			valorInicial = valorInicial + item.getValorEntrada() - item.getValorSaida();
-			item.setQuantidadeFinal(quantidadeInicial);
-			item.setValorFinal(valorInicial);
+
 			items.add(item);
 		}
 
