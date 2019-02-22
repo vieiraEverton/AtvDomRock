@@ -49,7 +49,7 @@ public class AtvApplication {
 					//se o Item mudou tem que obter o novo valor inicial
 					if (!movtoItems.get(i).getItem().equals(movtoItems.get(j + 1).getItem())) {
 						//saldo final = saldo inicial + entrada – saída
-						//quantidade e valor final de um é a quantidade final do outro
+						//quantidade e valor final de um é a quantidade e valor inicial do outro
 						quantidadeInicial = quantidadeInicial + item.getQuantidadeEntrada() - item.getQuantidadeSaida();
 						valorInicial = valorInicial + item.getValorEntrada() - item.getValorSaida();
 						item.setQuantidadeFinal(quantidadeInicial);
@@ -64,7 +64,7 @@ public class AtvApplication {
 						break;
 					} else if (!movtoItems.get(i).getDataLancamento().equals(movtoItems.get(j + 1).getDataLancamento())) {
 						//saldo final = saldo inicial + entrada – saída
-						//quantidade e valor final de um é a quantidade final do outro
+						//quantidade e valor final de um é a quantidade e valor inicial do outro
 						quantidadeInicial = quantidadeInicial + item.getQuantidadeEntrada() - item.getQuantidadeSaida();
 						valorInicial = valorInicial + item.getValorEntrada() - item.getValorSaida();
 						item.setQuantidadeFinal(quantidadeInicial);
